@@ -9,7 +9,7 @@ namespace SvnTest
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Subversion test, yo!!");
+            Console.WriteLine("Subversion test, yo!");
         }
     }
 }
