@@ -11,11 +11,11 @@ namespace PongDemo
         // private fields
         private double angle;
         private double speed;
+        private double xPos;
+        private double yPos;
 
         // properties
-        public Rectangle Sprite { get; set; }
-        public double XPos { get; set; }
-        public double YPos { get; set; }
+        public Rectangle Sprite { get; set; }        
         public int LastPaddle { get; set; }
 
         public double Angle
@@ -28,6 +28,31 @@ namespace PongDemo
         {
             get { return speed; }
             set { speed = value; }
+        }
+
+        public double XPos 
+        {
+            get
+            { 
+                return xPos;
+            }
+            set
+            { 
+                if (value >= 0 | value <= 570)
+                    xPos = value;
+            }
+        }
+        public double YPos
+        {
+            get
+            {
+                return yPos;
+            }
+            set
+            {
+                if (value > 0 | value < 370)
+                    yPos = value;
+            }
         }
 
         public Ball()
