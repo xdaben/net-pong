@@ -50,7 +50,7 @@ namespace PongDemo
             }
             set
             {
-                if (value > 0 | value < 370)
+                if (value >= 0 | value <= 370)
                     yPos = value;
             }
         }
