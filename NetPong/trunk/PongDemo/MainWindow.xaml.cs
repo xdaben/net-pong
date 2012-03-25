@@ -99,7 +99,7 @@ namespace PongDemo
                 ball.Angle = 270 + (90 - ball.Angle);
             
             // changle angle if ball hits top or bottom
-            if (ball.YPos >= 370 | ball.YPos <= 0)
+            if (ball.YPos >= 370 || ball.YPos <= 0)
             {
                 ball.Angle = 90 + (90 - ball.Angle);
                 //ball.LastPaddle = 0;
@@ -209,9 +209,9 @@ namespace PongDemo
         {
             //int keyCode = (int)e.Key;
 
-            if (e.Key == Key.Up | e.Key == Key.Down)
+            if (e.Key == Key.Up || e.Key == Key.Down)
                 paddle2.Direction = 0;
-            else if (e.Key == Key.A | e.Key == Key.Z)
+            else if (e.Key == Key.A || e.Key == Key.Z)
                 paddle1.Direction = 0;
 
         }
