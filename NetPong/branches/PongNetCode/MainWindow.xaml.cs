@@ -17,12 +17,13 @@ using System.Net;
 
 namespace PongDemo
 {
-
     public partial class MainWindow : Window
     {
         Ball ball;
         Paddle paddle1, paddle2;
         DispatcherTimer timer;
+        int playerOneScore = 0;
+        int playerTwoScore = 0;
         TcpListener server;
         IPAddress addr = IPAddress.Parse("127.0.0.1");
 
@@ -40,7 +41,7 @@ namespace PongDemo
             try
             {
                 server = new TcpListener(addr, 8001);
-                Console.WriteLine("Server started! Address: {0}",server.LocalEndpoint);
+                Console.WriteLine("Server started! Address: {0}", server.LocalEndpoint);
 
                 server.Start();
             }
@@ -111,7 +112,6 @@ namespace PongDemo
             MoveBall(ball);
             updateNetwork();
             updateDisplay();
-            
         }
 
         private void updateNetwork()
@@ -124,30 +124,53 @@ namespace PongDemo
             // change angle if ball hits paddle
             if (DetectHit())
                 ball.Angle = 270 + (90 - ball.Angle);
-            
-            // change angle if ball hits side wall
-            if (ball.XPos >= 570 | ball.XPos <= 0)
-            {
-                ball.Angle = 270 + (90 - ball.Angle);
-                ball.LastPaddle = 0;
-            }
-            
             // changle angle if ball hits top or bottom
             if (ball.YPos >= 370 | ball.YPos <= 0)
             {
                 ball.Angle = 90 + (90 - ball.Angle);
-                ball.LastPaddle = 0;
+                //ball.LastPaddle = 0;
             }
-            
+
+            // add score and reset the ball if a player scored
+            if (ball.XPos >= 570)
+            {
+                playerOneScoreLabel.Content = ++playerOneScore;
+                ResetTheBall();
+            }
+
+            if (ball.XPos <= 0)
+            {
+                playerTwoScoreLabel.Content = ++playerTwoScore;
+                ResetTheBall();
+            }
+
             ball.XPos += Math.Sin(ball.Angle * (Math.PI / 180)) * ball.Speed;
-            ball.YPos += Math.Cos(ball.Angle * (Math.PI / 180)) * ball.Speed;         
+            ball.YPos += Math.Cos(ball.Angle * (Math.PI / 180)) * ball.Speed;
+        }
+
+        private void ResetTheBall()
+        {
+            if (ball.LastPaddle == 2)
+            {
+                ball.YPos = paddle2.YPos;
+                ball.XPos = paddle2.XPos - 15;
+                ball.Angle = 310;
+                ball.Speed = 6;
+            }
+            else
+            {
+                ball.XPos = paddle1.XPos;
+                ball.YPos = paddle1.YPos;
+                ball.Angle = 60;
+                ball.Speed = 6;
+            }
         }
 
         private bool DetectHit()
         {
             // paddle1
             if (ball.LastPaddle != 1 && ball.XPos <= paddle1.XPos + 15 &&
-                ball.YPos + 20 >= paddle1.YPos && ball.YPos <= paddle1.YPos + 80)
+            ball.YPos + 20 >= paddle1.YPos && ball.YPos <= paddle1.YPos + 80)
             {
                 ball.LastPaddle = 1;
                 return true;
@@ -155,7 +178,7 @@ namespace PongDemo
 
             // paddle2
             if (ball.LastPaddle != 2 && ball.XPos + 20 >= paddle2.XPos + 5 &&
-                ball.YPos + 20 >= paddle2.YPos && ball.YPos <= paddle2.YPos + 80)
+            ball.YPos + 20 >= paddle2.YPos && ball.YPos <= paddle2.YPos + 80)
             {
                 ball.LastPaddle = 2;
                 return true;
@@ -191,17 +214,24 @@ namespace PongDemo
 
             //update ball
             Canvas.SetLeft(ball.Sprite, ball.XPos);
-            Canvas.SetTop(ball.Sprite,ball.YPos);
+            Canvas.SetTop(ball.Sprite, ball.YPos);
         }
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
-            int keyCode = (int)e.Key;
+            //int keyCode = (int)e.Key;
 
             if (e.Key == Key.Up)
-                paddle1.Direction = -1;
-            if (e.Key == Key.Down)
-                paddle1.Direction = 1;
+                paddle2.Direction = -1;
+            else
+                if (e.Key == Key.Down)
+                    paddle2.Direction = 1;
+                else
+                    if (e.Key == Key.A)
+                        paddle1.Direction = -1;
+                    else
+                        if (e.Key == Key.Z)
+                            paddle1.Direction = 1;
         }
 
         private void Window_KeyUp(object sender, KeyEventArgs e)
@@ -209,8 +239,10 @@ namespace PongDemo
             int keyCode = (int)e.Key;
 
             if (e.Key == Key.Up | e.Key == Key.Down)
-                paddle1.Direction = 0;
-
+                paddle2.Direction = 0;
+            else
+                if (e.Key == Key.A | e.Key == Key.Z)
+                    paddle1.Direction = 0;
         }
     }
 }
