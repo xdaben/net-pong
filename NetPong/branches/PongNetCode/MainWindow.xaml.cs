@@ -12,6 +12,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using System.Net.Sockets;
+using System.Net;
 
 namespace PongDemo
 {
@@ -21,13 +23,32 @@ namespace PongDemo
         Ball ball;
         Paddle paddle1, paddle2;
         DispatcherTimer timer;
+        TcpListener server;
+        IPAddress addr = IPAddress.Parse("127.0.0.1");
 
         public MainWindow()
         {
             InitializeComponent();
             InitBall();
             InitPaddles();
+            InitNetwork();
             Update();
+        }
+
+        private void InitNetwork()
+        {
+            try
+            {
+                server = new TcpListener(addr, 8001);
+                Console.WriteLine("Server started! Address: {0}",server.LocalEndpoint);
+
+                server.Start();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error starting server!");
+                Console.WriteLine("Message: {0}", e.Message);
+            }
         }
 
         private void InitBall()
@@ -86,9 +107,16 @@ namespace PongDemo
         private void TimerHandler(object sender, EventArgs e)
         {
             MovePaddle(paddle1);
-            //MovePaddle(paddle2);
+            MovePaddle(paddle2);
             MoveBall(ball);
+            updateNetwork();
             updateDisplay();
+            
+        }
+
+        private void updateNetwork()
+        {
+            //Console.WriteLine("Ping!");
         }
 
         private void MoveBall(Ball ball)
