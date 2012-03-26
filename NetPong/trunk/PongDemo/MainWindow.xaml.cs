@@ -37,7 +37,7 @@ namespace PongDemo
             ball.Sprite = MakeBallSprite();
             ball.XPos = 40;
             ball.YPos = 180;
-            ball.Angle = 60;
+            ball.Angle = 90;
             ball.Speed = 6;
         }
 
@@ -96,14 +96,24 @@ namespace PongDemo
         {
             // change angle if ball hits paddle
             if (DetectHit())
-                ball.Angle = 270 + (90 - ball.Angle);
+            {
+                //ball.Angle = 360 - ball.Angle;
+                ball.Angle = GetNewAngle();
+                ball.Speed *= 1.02;
+            }
             
             // changle angle if ball hits top or bottom
-            if (ball.YPos >= 370 || ball.YPos <= 0)
+            if (ball.LastBounce != 3 && ball.YPos <= 0)
             {
-                ball.Angle = 90 + (90 - ball.Angle);
-                //ball.LastPaddle = 0;
+                ball.Angle = 180 - ball.Angle;
+                ball.LastBounce = 3;
             }
+
+            if (ball.LastBounce != 4 && ball.YPos >= 370)
+            {
+                ball.Angle = 180 - ball.Angle;
+                ball.LastBounce = 4;
+            }            
 
             // add score and reset the ball if a player scored
             if (ball.XPos >= 570)
@@ -124,18 +134,18 @@ namespace PongDemo
 
         private void ResetTheBall()
         {
-            if (ball.LastPaddle == 2)
+            if (ball.LastBounce == 2)
             {
-                ball.YPos = paddle2.YPos;
+                ball.YPos = paddle2.YPos + paddle2.Sprite.Height / 2;
                 ball.XPos = paddle2.XPos - 15;
-                ball.Angle = 310;
+                ball.Angle = 270;
                 ball.Speed = 6;
             }
             else
             {
                 ball.XPos = paddle1.XPos;
-                ball.YPos = paddle1.YPos;
-                ball.Angle = 60;
+                ball.YPos = paddle1.YPos + paddle1.Sprite.Height / 2;
+                ball.Angle = 90;
                 ball.Speed = 6;
             }
         }
@@ -143,22 +153,40 @@ namespace PongDemo
         private bool DetectHit()
         {
             // paddle1
-            if (ball.LastPaddle != 1 && ball.XPos <= paddle1.XPos + 15 &&
+            if (ball.LastBounce != 1 && ball.XPos <= paddle1.XPos + 20 &&
                 ball.YPos + 20 >= paddle1.YPos && ball.YPos <= paddle1.YPos + 80)
             {
-                ball.LastPaddle = 1;
+                ball.LastBounce = 1;
                 return true;
             }
 
             // paddle2
-            if (ball.LastPaddle != 2 && ball.XPos + 20 >= paddle2.XPos + 5 &&
+            if (ball.LastBounce != 2 && ball.XPos + 20 >= paddle2.XPos &&
                 ball.YPos + 20 >= paddle2.YPos && ball.YPos <= paddle2.YPos + 80)
             {
-                ball.LastPaddle = 2;
+                ball.LastBounce = 2;
                 return true;
             }
             else
                 return false;
+        }
+
+        // calculates the return angle of the ball based upon where
+        // the ball hits the paddle
+        private double GetNewAngle()
+        {
+            double hitPosition; // 0 == top of paddle, 1 == bottom
+
+            if (ball.LastBounce == 1)
+            {
+                hitPosition = (ball.YPos + 10 - paddle1.YPos) / paddle1.Sprite.Height;
+                return 60 + 60 * hitPosition;
+            }
+            else
+            {
+                hitPosition = (ball.YPos + 10 - paddle2.YPos) / paddle2.Sprite.Height;
+                return 300 - 60 * hitPosition;
+            }
         }
 
         private void MovePaddle(Paddle paddle)
@@ -193,8 +221,6 @@ namespace PongDemo
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
-            //int keyCode = (int)e.Key;
-
             if (e.Key == Key.Up)
                 paddle2.Direction = -1;
             else if (e.Key == Key.Down)
@@ -207,8 +233,6 @@ namespace PongDemo
 
         private void Window_KeyUp(object sender, KeyEventArgs e)
         {
-            //int keyCode = (int)e.Key;
-
             if (e.Key == Key.Up || e.Key == Key.Down)
                 paddle2.Direction = 0;
             else if (e.Key == Key.A || e.Key == Key.Z)
