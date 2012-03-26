@@ -16,7 +16,7 @@ namespace PongDemo
 
         // properties
         public Rectangle Sprite { get; set; }        
-        public int LastPaddle { get; set; }
+        public int LastBounce { get; set; }
 
         public double Angle
         {
@@ -38,7 +38,7 @@ namespace PongDemo
             }
             set
             { 
-                if (value >= 0 | value <= 570)
+                if (value >= 0 || value <= 570)
                     xPos = value;
             }
         }
@@ -50,7 +50,7 @@ namespace PongDemo
             }
             set
             {
-                if (value >= 0 | value <= 370)
+                if (value >= 0 || value <= 370)
                     yPos = value;
             }
         }
