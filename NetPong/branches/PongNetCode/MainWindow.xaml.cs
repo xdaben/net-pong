@@ -25,6 +25,7 @@ namespace PongDemo
         int playerOneScore = 0;
         int playerTwoScore = 0;
         TcpListener server;
+        Socket s;
         IPAddress addr = IPAddress.Parse("127.0.0.1");
 
         public MainWindow()
@@ -42,8 +43,12 @@ namespace PongDemo
             {
                 server = new TcpListener(addr, 8001);
                 Console.WriteLine("Server started! Address: {0}", server.LocalEndpoint);
+                
 
                 server.Start();
+                s = server.AcceptSocket();
+                
+                
             }
             catch (Exception e)
             {
@@ -116,7 +121,8 @@ namespace PongDemo
 
         private void updateNetwork()
         {
-            //Console.WriteLine("Ping!");
+            ASCIIEncoding asen = new ASCIIEncoding();
+            s.Send(asen.GetBytes(playerOneScore.ToString()));
         }
 
         private void MoveBall(Ball ball)
