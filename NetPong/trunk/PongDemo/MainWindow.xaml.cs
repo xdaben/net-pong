@@ -129,7 +129,7 @@ namespace PongDemo
         {
             if (ball.LastPaddle == 2)
             {
-                ball.YPos = paddle2.YPos + paddle2.Sprite.Height / 2;
+                ball.YPos = paddle2.YPos + paddle2.Sprite.Height / 2 - 10;
                 ball.XPos = paddle2.XPos - 15;
                 ball.Angle = 270;
                 ball.Speed = 6;
@@ -137,7 +137,7 @@ namespace PongDemo
             else
             {
                 ball.XPos = paddle1.XPos;
-                ball.YPos = paddle1.YPos + paddle1.Sprite.Height / 2;
+                ball.YPos = paddle1.YPos + paddle1.Sprite.Height / 2 - 10;
                 ball.Angle = 90;
                 ball.Speed = 6;
             }
