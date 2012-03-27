@@ -29,9 +29,9 @@ namespace PongDemo
                     yPos = 0;
                     this.Speed = 0;
                 }
-                else if (value >= 310)
+                else if (value >= 300)
                 {
-                    yPos = 310;
+                    yPos = 300;
                     this.Speed = 0;
                 }
                 else

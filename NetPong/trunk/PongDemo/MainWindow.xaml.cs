@@ -55,7 +55,7 @@ namespace PongDemo
         {
             paddle1 = new Paddle(1);
             paddle1.Sprite = MakePaddleSprite();
-            paddle1.XPos = 20;
+            paddle1.XPos = 15;
             paddle1.YPos = 150;
             paddle1.Speed = 0;
 
