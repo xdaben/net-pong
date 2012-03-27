@@ -16,7 +16,8 @@ namespace PongDemo
 
         // properties
         public Rectangle Sprite { get; set; }
-        public int LastBounce { get; set; } // 1 == paddle1, 2 == paddle 2, 3 == top, 4 == bottom
+        public int LastPaddle { get; set; } // 1 == paddle1, 2 == paddle 2, 3 == top, 4 == bottom
+        public int LastBounce { get; set; }
 
         public double Angle
         {

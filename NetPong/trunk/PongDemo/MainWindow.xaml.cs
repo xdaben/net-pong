@@ -103,17 +103,10 @@ namespace PongDemo
             }
             
             // changle angle if ball hits top or bottom
-            if (ball.LastBounce != 3 && ball.YPos <= 0)
+            if (ball.YPos <= 0 | ball.YPos >= 370)
             {
                 ball.Angle = 180 - ball.Angle;
-                ball.LastBounce = 3;
-            }
-
-            if (ball.LastBounce != 4 && ball.YPos >= 370)
-            {
-                ball.Angle = 180 - ball.Angle;
-                ball.LastBounce = 4;
-            }            
+            }      
 
             // add score and reset the ball if a player scored
             if (ball.XPos >= 570)
@@ -134,7 +127,7 @@ namespace PongDemo
 
         private void ResetTheBall()
         {
-            if (ball.LastBounce == 2)
+            if (ball.LastPaddle == 2)
             {
                 ball.YPos = paddle2.YPos + paddle2.Sprite.Height / 2;
                 ball.XPos = paddle2.XPos - 15;
@@ -153,18 +146,18 @@ namespace PongDemo
         private bool DetectHit()
         {
             // paddle1
-            if (ball.LastBounce != 1 && ball.XPos <= paddle1.XPos + 20 &&
+            if (ball.LastPaddle != 1 && ball.XPos <= paddle1.XPos + 20 &&
                 ball.YPos + 20 >= paddle1.YPos && ball.YPos <= paddle1.YPos + 80)
             {
-                ball.LastBounce = 1;
+                ball.LastPaddle = 1;
                 return true;
             }
 
             // paddle2
-            if (ball.LastBounce != 2 && ball.XPos + 20 >= paddle2.XPos &&
+            if (ball.LastPaddle != 2 && ball.XPos + 20 >= paddle2.XPos &&
                 ball.YPos + 20 >= paddle2.YPos && ball.YPos <= paddle2.YPos + 80)
             {
-                ball.LastBounce = 2;
+                ball.LastPaddle = 2;
                 return true;
             }
             else
@@ -177,7 +170,7 @@ namespace PongDemo
         {
             double hitPosition; // 0 == top of paddle, 1 == bottom
 
-            if (ball.LastBounce == 1)
+            if (ball.LastPaddle == 1)
             {
                 hitPosition = (ball.YPos + 10 - paddle1.YPos) / paddle1.Sprite.Height;
                 return 60 + 60 * hitPosition;
