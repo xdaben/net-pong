@@ -28,7 +28,12 @@ namespace PongDemo
         public double Speed
         {
             get { return speed; }
-            set { speed = value; }
+
+            set 
+            { 
+                if (value <= 20)
+                    speed = value; 
+            }
         }
 
         public double XPos 
