@@ -14,7 +14,8 @@ namespace PongServer
         static void Main(string[] args)
         {
             Server server = new Server();
-            server.start();
+            server.Init();
+            server.StartGame();
             
         }
     }
