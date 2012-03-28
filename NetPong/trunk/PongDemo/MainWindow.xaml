@@ -16,8 +16,8 @@
 
         <Canvas Name="ScoreBoard" Background="Green" Height="40"  Width="600" 
                 Grid.Row="0">
-            <Label Canvas.Left="20" Canvas.Top="6" Content="0" Height="28" Name="playerOneScoreLabel" />
-            <Label Canvas.Right="20" Canvas.Top="6" Content="0" Height="28" Name="playerTwoScoreLabel" />
+            <Label Canvas.Left="20" Canvas.Top="1" Content="0" Name="playerOneScoreLabel" FontSize="24"/>
+            <Label Canvas.Right="20" Canvas.Top="1" Content="0" Name="playerTwoScoreLabel" FontSize="24"/>
         </Canvas>
         <Canvas Name="GameCourt" Background="Black" Height="400"  Width="600" 
                 Grid.Row="1"/>        
