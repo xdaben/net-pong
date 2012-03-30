@@ -55,15 +55,7 @@ namespace PongServer
                 server.Bind(new IPEndPoint(address, port));
                 server.Listen(5);
                 server.BeginAccept(new AsyncCallback(OnConnectRequest), server);
-                while (numOfPlayers < maxNumOfPlayers)
-                {
-                    foreach (Player p in players)
-                    {
-                        //p.NetPlayer.Send(enc.GetBytes(String.Format("Waiting for {0} more player(s)\n", maxNumOfPlayers - numOfPlayers)));
-                        p.toSend = String.Format("Waiting for {0} more player(s)\n", maxNumOfPlayers - numOfPlayers);
-                    }
-                    Thread.Sleep(1000);
-                }
+
 
                 
                 Console.ReadLine(); 
@@ -91,7 +83,7 @@ namespace PongServer
             {
                 //byte[] reply = enc.GetBytes("Sorry, server is full!");
                 //tmpPlayer.NetPlayer.Send(reply);
-                tmpPlayer.toSend = "Sorry, server is full!";
+                tmpPlayer.ToSend = "Sorry, server is full!";
                 Console.WriteLine("A Player {0}, joined but the server is full!", tmpPlayer.NetPlayer.RemoteEndPoint);
                 tmpPlayer.NetPlayer.Close();
             }
@@ -101,11 +93,12 @@ namespace PongServer
                 int thisPlayer = ++numOfPlayers;
                 players[thisPlayer - 1].PlayerNum = thisPlayer;
                 //byte[] reply = enc.GetBytes(String.Format("You are player {0}", thisPlayer));
-                tmpPlayer.toSend = String.Format("You are player {0}", thisPlayer);
+                tmpPlayer.ToSend = String.Format("You are player {0}", thisPlayer);
                 //players[thisPlayer - 1].NetPlayer.Send(reply);
                 Console.WriteLine("Player {0}: {1}, joined", players[thisPlayer - 1].PlayerNum, players[thisPlayer - 1].NetPlayer.RemoteEndPoint);
                 players[thisPlayer - 1].SetupRecieveCallback();
                 players[thisPlayer - 1].SetupSendCallback();
+                IsReady();
 
             }
             
@@ -114,6 +107,17 @@ namespace PongServer
             listener.BeginAccept(new AsyncCallback(OnConnectRequest), listener);
         }
 
+
+        private void IsReady()
+        {
+            if (numOfPlayers < maxNumOfPlayers)
+            {
+                foreach (Player p in players)
+                {
+                    p.ToSend = String.Format("Waiting for {0} more player(s)\n", maxNumOfPlayers - numOfPlayers);
+                }
+            }
+        }
         
 
         
@@ -124,8 +128,10 @@ namespace PongServer
             while (true)
             {
                 Console.Clear();
-                Console.WriteLine(players[0].recievedData);
-                Console.WriteLine(players[1].recievedData);
+                foreach (Player p in players)
+                {
+                    Console.WriteLine("{0}",p.recievedData);
+                }
                 Thread.Sleep(100);
             }
             //

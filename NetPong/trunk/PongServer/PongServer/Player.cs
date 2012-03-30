@@ -16,8 +16,14 @@ namespace PongServer
         private const int buffLength = 256;
         private byte[] buffer = new byte[buffLength];
         public string recievedData = "";
-        public string toSend = "";
-        public string toSendOld = "";
+        //private string toSend = "";
+        private Queue<string> toSendBuffer = new Queue<string>();
+        public string ToSend
+        {
+            set { toSendBuffer.Enqueue(value); }
+        }
+       
+        //public string toSendOld = "";
 
         public void SetupRecieveCallback()
         {
@@ -34,14 +40,19 @@ namespace PongServer
 
         public void SetupSendCallback()
         {
+            byte[] buffer;
             try
             {
-                byte[] buffer = ASCIIEncoding.ASCII.GetBytes(toSend);
-                AsyncCallback sendData = new AsyncCallback(OnSentData);
-                while (toSendOld.Equals(toSend))
+                if (toSendBuffer.Count == 0)
                 {
-                    
+                    buffer = ASCIIEncoding.ASCII.GetBytes("");
                 }
+                else
+                {
+                    buffer = ASCIIEncoding.ASCII.GetBytes(toSendBuffer.Dequeue());
+                }
+                AsyncCallback sendData = new AsyncCallback(OnSentData);
+                
                 NetPlayer.BeginSend(buffer, 0, buffer.Length, SocketFlags.None, sendData, NetPlayer);
             }
             catch (Exception ex)
@@ -82,9 +93,7 @@ namespace PongServer
         public void OnSentData(IAsyncResult ar)
         {
             Socket sock = (Socket)ar.AsyncState;
-            NetPlayer.EndSend(ar);
-            toSendOld = toSend;
-            System.Threading.Thread.Sleep(500);
+            int sent = NetPlayer.EndSend(ar);
             try
             {
                 SetupSendCallback();
