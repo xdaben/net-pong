@@ -67,14 +67,14 @@ namespace PongThreaded
         {
             if (ball.LastPaddle == 2)
             {
-                ball.YPos = paddle2.YPos + paddle2.Height / 2 - 10;
-                ball.XPos = paddle2.XPos - 15;
+                ball.XPos = paddle2.XPos;
+                ball.YPos = paddle2.YPos + paddle2.Height / 2 - 10;                
                 ball.Angle = 270;
                 ball.Speed = 6;
             }
             else
             {
-                ball.XPos = paddle1.XPos;
+                ball.XPos = paddle1.XPos + 10;
                 ball.YPos = paddle1.YPos + paddle1.Height / 2 - 10;
                 ball.Angle = 90;
                 ball.Speed = 6;

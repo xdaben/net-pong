@@ -12,6 +12,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using System.Threading;
 
 namespace PongThreaded
 {
@@ -19,7 +20,8 @@ namespace PongThreaded
     {
         Rectangle paddleOneSprite, paddleTwoSprite, ballSprite;
         GameLogic game;
-        DispatcherTimer logicTimer, displayTimer;
+        DispatcherTimer /*logicTimer,*/ displayTimer;
+        Thread logicThread, displayThread;
 
         public MainWindow()
         {
@@ -34,7 +36,7 @@ namespace PongThreaded
             ballSprite = MakeBallSprite();
             Canvas.SetLeft(ballSprite, 35);
             Canvas.SetTop(ballSprite, 180);
-            
+
             paddleOneSprite = MakePaddleSprite();
             Canvas.SetLeft(paddleOneSprite, 15);
             Canvas.SetTop(paddleOneSprite, 150);
@@ -42,8 +44,6 @@ namespace PongThreaded
             paddleTwoSprite = MakePaddleSprite();
             Canvas.SetLeft(paddleTwoSprite, 560);
             Canvas.SetTop(paddleTwoSprite, 150);
-
-            
         }
 
         private Rectangle MakePaddleSprite()
@@ -70,10 +70,16 @@ namespace PongThreaded
         // and display upates
         private void Update()
         {
-            logicTimer = new DispatcherTimer();
-            logicTimer.Interval = new TimeSpan(0, 0, 0, 0, 10);
-            logicTimer.Tick += LogicTimerHandler;
-            logicTimer.Start();
+            //logicTimer = new DispatcherTimer();
+            //logicTimer.Interval = new TimeSpan(0, 0, 0, 0, 10);
+            //logicTimer.Tick += LogicTimerHandler;
+            //logicTimer.Start();
+
+            logicThread = new Thread(new ThreadStart(LogicUpdate));
+            logicThread.Start();           
+
+            //Thread displayThread = new Thread(new ThreadStart(UpdateDisplay));
+            //displayThread.Start();
 
             displayTimer = new DispatcherTimer();
             displayTimer.Interval = new TimeSpan(0, 0, 0, 0, 15);
@@ -82,11 +88,22 @@ namespace PongThreaded
 
         }
 
+        private void LogicUpdate()
+        {
+            while (true)
+            {
+                game.MovePaddle(game.paddle1);
+                game.MovePaddle(game.paddle2);
+                game.MoveBall(game.ball);
+                Thread.Sleep(15);
+            }            
+        }
+
         private void LogicTimerHandler(object sender, EventArgs e)
         {
             game.MovePaddle(game.paddle1);
             game.MovePaddle(game.paddle2);
-            game.MoveBall(game.ball);            
+            game.MoveBall(game.ball);
         }
 
         private void DisplayTimerHandler(object sender, EventArgs e)
@@ -100,7 +117,7 @@ namespace PongThreaded
             //update ball
             Canvas.SetLeft(ballSprite, game.ball.XPos);
             Canvas.SetTop(ballSprite, game.ball.YPos);
-            
+
             // udpate paddle1
             Canvas.SetLeft(paddleOneSprite, game.paddle1.XPos);
             Canvas.SetTop(paddleOneSprite, game.paddle1.YPos);
@@ -132,6 +149,11 @@ namespace PongThreaded
                 game.paddle2.Direction = 0;
             else if (e.Key == Key.A || e.Key == Key.Z)
                 game.paddle1.Direction = 0;
+        }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            logicThread.Abort();
         }
     }
 }
