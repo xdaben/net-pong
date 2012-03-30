@@ -22,8 +22,8 @@ namespace PongServer
         //player 1
         //players
         List<Player> players = new List<Player>();
-        int numOfPlayers = 0;
-        const int maxNumOfPlayers = 2;
+        public int numOfPlayers = 0;
+        public const int maxNumOfPlayers = 2;
         //ball
         Ball ball = new Ball();
         //end Game vars
@@ -55,7 +55,14 @@ namespace PongServer
                 server.Bind(new IPEndPoint(address, port));
                 server.Listen(5);
                 server.BeginAccept(new AsyncCallback(OnConnectRequest), server);
-
+                while (numOfPlayers < maxNumOfPlayers)
+                {
+                    foreach (Player p in players)
+                    {
+                        p.NetPlayer.Send(enc.GetBytes(String.Format("Waiting for {0} more player(s)\n", maxNumOfPlayers - numOfPlayers)));
+                    }
+                    Thread.Sleep(1000);
+                }
 
                 
                 Console.ReadLine(); 
@@ -66,7 +73,7 @@ namespace PongServer
                 Console.WriteLine("Error starting server: {0}", e.Message);
             }
 
-            //set up game vars        
+            //set up game vars
             ball.Xpos = 40;
             ball.Ypos = 180;
             ball.Angle = 90;
@@ -81,17 +88,23 @@ namespace PongServer
             tmpPlayer.NetPlayer = server.EndAccept(ar);    
             if (numOfPlayers >= 2)
             {
-                byte[] reply = enc.GetBytes("Sorry, server is full!");
-                tmpPlayer.NetPlayer.Send(reply);
+                //byte[] reply = enc.GetBytes("Sorry, server is full!");
+                //tmpPlayer.NetPlayer.Send(reply);
+                tmpPlayer.toSend = "Sorry, server is full!";
                 Console.WriteLine("A Player {0}, joined but the server is full!", tmpPlayer.NetPlayer.RemoteEndPoint);
                 tmpPlayer.NetPlayer.Close();
             }
             else
             {
                 players.Add(tmpPlayer);
-                numOfPlayers++;
-                players[numOfPlayers - 1].PlayerNum = numOfPlayers;
-                Console.WriteLine("Player {0}: {1}, joined", players[numOfPlayers - 1].PlayerNum, players[numOfPlayers - 1].NetPlayer.RemoteEndPoint);
+                int thisPlayer = ++numOfPlayers;
+                players[thisPlayer - 1].PlayerNum = thisPlayer;
+                //byte[] reply = enc.GetBytes(String.Format("You are player {0}", thisPlayer));
+                tmpPlayer.toSend = String.Format("You are player {0}", thisPlayer);
+                //players[thisPlayer - 1].NetPlayer.Send(reply);
+                Console.WriteLine("Player {0}: {1}, joined", players[thisPlayer - 1].PlayerNum, players[thisPlayer - 1].NetPlayer.RemoteEndPoint);
+                players[thisPlayer - 1].SetupRecieveCallback();
+
             }
             
 
@@ -99,15 +112,26 @@ namespace PongServer
             listener.BeginAccept(new AsyncCallback(OnConnectRequest), listener);
         }
 
+        
+
+        
+
         internal void StartGame()
         {
+            while (true)
+            {
+                Console.Clear();
+                Console.WriteLine(players[0].recievedData);
+                Console.WriteLine(players[1].recievedData);
+                Thread.Sleep(100);
+            }
 
         }
 
         private void Update()
         {
             
-
+            server.Close();
 
             
             
