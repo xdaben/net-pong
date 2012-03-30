@@ -5,6 +5,7 @@ using System.Text;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using System.Text.RegularExpressions;
 
 namespace PongServer
 {
@@ -28,6 +29,12 @@ namespace PongServer
         Ball ball = new Ball();
         //end Game vars
 
+        //Misc vars
+        bool endGame;
+        Thread updateThread;
+        bool isReady;
+        //Timer timer;
+
 
 
         public Server()
@@ -41,14 +48,15 @@ namespace PongServer
             ).FirstOrDefault();
 
             //for now use localhost
-            address = IPAddress.Parse("127.0.0.1");
-            //address = ip;
+            //address = IPAddress.Parse("127.0.0.1");
+            address = ip;
         }
 
         internal void Init()
         {
             
             Console.WriteLine("Welcome to the pong server!");
+            Console.WriteLine("Your IP address is {0}.",address);
             try
             {
                 server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
@@ -58,7 +66,7 @@ namespace PongServer
 
 
                 
-                Console.ReadLine(); 
+                //Console.ReadLine(); 
             }
             catch (Exception e)
             {
@@ -67,10 +75,7 @@ namespace PongServer
             }
 
             //set up game vars
-            ball.Xpos = 40;
-            ball.Ypos = 180;
-            ball.Angle = 90;
-            ball.Speed = 6;
+
         }
 
         public void OnConnectRequest(IAsyncResult ar)
@@ -79,10 +84,8 @@ namespace PongServer
             Socket listener = (Socket)ar.AsyncState;
             Player tmpPlayer = new Player();
             tmpPlayer.NetPlayer = server.EndAccept(ar);    
-            if (numOfPlayers >= 2)
+            if (numOfPlayers >= maxNumOfPlayers)
             {
-                //byte[] reply = enc.GetBytes("Sorry, server is full!");
-                //tmpPlayer.NetPlayer.Send(reply);
                 tmpPlayer.ToSend = "Sorry, server is full!";
                 Console.WriteLine("A Player {0}, joined but the server is full!", tmpPlayer.NetPlayer.RemoteEndPoint);
                 tmpPlayer.NetPlayer.Close();
@@ -91,13 +94,12 @@ namespace PongServer
             {
                 players.Add(tmpPlayer);
                 int thisPlayer = ++numOfPlayers;
-                players[thisPlayer - 1].PlayerNum = thisPlayer;
-                //byte[] reply = enc.GetBytes(String.Format("You are player {0}", thisPlayer));
+                tmpPlayer.PlayerNum = thisPlayer;
                 tmpPlayer.ToSend = String.Format("You are player {0}", thisPlayer);
-                //players[thisPlayer - 1].NetPlayer.Send(reply);
-                Console.WriteLine("Player {0}: {1}, joined", players[thisPlayer - 1].PlayerNum, players[thisPlayer - 1].NetPlayer.RemoteEndPoint);
-                players[thisPlayer - 1].SetupRecieveCallback();
-                players[thisPlayer - 1].SetupSendCallback();
+                Console.WriteLine("Player {0}: {1}, joined", tmpPlayer.PlayerNum, players[thisPlayer - 1].NetPlayer.RemoteEndPoint);
+                tmpPlayer.SetupRecieveCallback();
+                tmpPlayer.SetupSendCallback();
+                //tmpPlayer.logic = new GameLogic(tmpPlayer);
                 IsReady();
 
             }
@@ -117,6 +119,11 @@ namespace PongServer
                     p.ToSend = String.Format("Waiting for {0} more player(s)\n", maxNumOfPlayers - numOfPlayers);
                 }
             }
+            else
+            {
+                isReady = true;
+                
+            }
         }
         
 
@@ -124,26 +131,45 @@ namespace PongServer
 
         internal void StartGame()
         {
-            //DEBUG STUFF
-            while (true)
+            while (isReady == false)
             {
-                Console.Clear();
-                foreach (Player p in players)
-                {
-                    Console.WriteLine("{0}",p.recievedData);
-                }
-                Thread.Sleep(100);
+                //wait until the game is ready
             }
-            //
+            
+            updateThread = new Thread(new ThreadStart(Update));
+            updateThread.Start();
 
         }
 
         private void Update()
         {
-            
+
+            //Timer logicTimer = new Timer(new TimerCallback(Update), null, 0, 10);
+            //Regex r = new Regex(@"\d+");
+
+
+
+            //List<string> playerDataToSend = new List<string>();
+            while (endGame == false)
+            {
+                StringBuilder sb = new StringBuilder();
+                foreach (Player p in players)
+                {
+                    sb.Append(p.Xpos + " ");
+                    sb.Append(p.Ypos + " ");
+                    sb.Append(p.Score + " ");
+                }
+
+                foreach (Player p in players)
+                {
+                    
+                    p.ToSend = sb.ToString();
+                }
+                Thread.Sleep(100);
+            }
+            updateThread.Abort();
             server.Close();
 
-            
             
             
         }
