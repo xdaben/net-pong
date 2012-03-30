@@ -17,11 +17,10 @@ namespace PongServer
         private byte[] buffer = new byte[buffLength];
         public string recievedData = "";
         public string toSend = "";
-        
+        public string toSendOld = "";
 
         public void SetupRecieveCallback()
         {
-
             try
             {
                 AsyncCallback recieveData = new AsyncCallback(OnRecievedData);
@@ -34,13 +33,15 @@ namespace PongServer
         }
 
         public void SetupSendCallback()
-        {   
-
-
+        {
             try
             {
                 byte[] buffer = ASCIIEncoding.ASCII.GetBytes(toSend);
                 AsyncCallback sendData = new AsyncCallback(OnSentData);
+                while (toSendOld.Equals(toSend))
+                {
+                    
+                }
                 NetPlayer.BeginSend(buffer, 0, buffer.Length, SocketFlags.None, sendData, NetPlayer);
             }
             catch (Exception ex)
@@ -48,23 +49,20 @@ namespace PongServer
                 Console.WriteLine("Send callback setup failed for player {0}", PlayerNum);
             }
         }
-        
+
         public void OnRecievedData(IAsyncResult ar)
         {
-            
-            
             Socket sock = (Socket)ar.AsyncState;
 
-            
             try
             {
                 int nBytesRec = sock.EndReceive(ar);
                 if (nBytesRec > 0)
                 {
                     // Write the data to the List
-                    recievedData = Encoding.ASCII.GetString(buffer,0, nBytesRec);
+                    recievedData = Encoding.ASCII.GetString(buffer, 0, nBytesRec);
 
-                    
+
                     SetupRecieveCallback();
                 }
                 else
@@ -73,7 +71,6 @@ namespace PongServer
                     Console.WriteLine("Player {0}, disconnected", PlayerNum);
                     sock.Shutdown(SocketShutdown.Both);
                     sock.Close();
-                    
                 }
             }
             catch (Exception ex)
@@ -84,15 +81,13 @@ namespace PongServer
 
         public void OnSentData(IAsyncResult ar)
         {
-
-
             Socket sock = (Socket)ar.AsyncState;
-
-
+            NetPlayer.EndSend(ar);
+            toSendOld = toSend;
+            System.Threading.Thread.Sleep(500);
             try
             {
                 SetupSendCallback();
-
             }
             catch (Exception ex)
             {
@@ -100,6 +95,4 @@ namespace PongServer
             }
         }
     }
-
-
 }
