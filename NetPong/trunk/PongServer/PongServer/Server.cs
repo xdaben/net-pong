@@ -59,7 +59,8 @@ namespace PongServer
                 {
                     foreach (Player p in players)
                     {
-                        p.NetPlayer.Send(enc.GetBytes(String.Format("Waiting for {0} more player(s)\n", maxNumOfPlayers - numOfPlayers)));
+                        //p.NetPlayer.Send(enc.GetBytes(String.Format("Waiting for {0} more player(s)\n", maxNumOfPlayers - numOfPlayers)));
+                        p.toSend = String.Format("Waiting for {0} more player(s)\n", maxNumOfPlayers - numOfPlayers);
                     }
                     Thread.Sleep(1000);
                 }
@@ -104,6 +105,7 @@ namespace PongServer
                 //players[thisPlayer - 1].NetPlayer.Send(reply);
                 Console.WriteLine("Player {0}: {1}, joined", players[thisPlayer - 1].PlayerNum, players[thisPlayer - 1].NetPlayer.RemoteEndPoint);
                 players[thisPlayer - 1].SetupRecieveCallback();
+                players[thisPlayer - 1].SetupSendCallback();
 
             }
             
@@ -118,6 +120,7 @@ namespace PongServer
 
         internal void StartGame()
         {
+            //DEBUG STUFF
             while (true)
             {
                 Console.Clear();
@@ -125,6 +128,7 @@ namespace PongServer
                 Console.WriteLine(players[1].recievedData);
                 Thread.Sleep(100);
             }
+            //
 
         }
 
