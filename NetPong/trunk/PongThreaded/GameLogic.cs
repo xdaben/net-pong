@@ -47,7 +47,7 @@ namespace PongThreaded
             }
 
             // add score and reset the ball if a player scored
-            if (ball.XPos >= 570)
+            if (ball.XPos >= 580)
             {
                 playerOneScore++;
                 ResetTheBall();

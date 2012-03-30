@@ -31,6 +31,10 @@ namespace PongThreaded
 
         private void InitSprites()
         {
+            ballSprite = MakeBallSprite();
+            Canvas.SetLeft(ballSprite, 35);
+            Canvas.SetTop(ballSprite, 180);
+            
             paddleOneSprite = MakePaddleSprite();
             Canvas.SetLeft(paddleOneSprite, 15);
             Canvas.SetTop(paddleOneSprite, 150);
@@ -39,9 +43,7 @@ namespace PongThreaded
             Canvas.SetLeft(paddleTwoSprite, 560);
             Canvas.SetTop(paddleTwoSprite, 150);
 
-            ballSprite = MakeBallSprite();
-            Canvas.SetLeft(ballSprite, 35);
-            Canvas.SetTop(ballSprite, 180);
+            
         }
 
         private Rectangle MakePaddleSprite()
