@@ -12,14 +12,18 @@ namespace PongServer
     class Server
     {
         //Network stuff
-        private TcpListener server;
+        private Socket server;
         private ASCIIEncoding enc = new ASCIIEncoding();
-        private int port = 8001;
+        private const int port = 8001;
         private IPAddress address;
         //end Network stuff
 
         //Game vars
         //player 1
+        //players
+        List<Player> players = new List<Player>();
+        int numOfPlayers = 0;
+        const int maxNumOfPlayers = 2;
         Player player1 = new Player();
         //Player 2
         Player player2 = new Player();
@@ -50,19 +54,14 @@ namespace PongServer
             Console.WriteLine("Welcome to the pong server!");
             try
             {
-                server = new TcpListener(address, port);
-                server.Start();
-                Console.WriteLine("Server started, now waiting for clients...");
-                Console.WriteLine("Your IP address is: {0}", address);
-                Console.WriteLine("Give someone this if they want to join the pong server");
-                player1.NetPlayer = server.AcceptSocket();
-                Console.WriteLine("Player 1 connected! ({0})", player1.NetPlayer.RemoteEndPoint);
-                player1.NetPlayer.Send(enc.GetBytes("Player 1."));
-                player2.NetPlayer = server.AcceptSocket();
-                Console.WriteLine("Player 2 connected! ({0})", player2.NetPlayer.RemoteEndPoint);
-                player2.NetPlayer.Send(enc.GetBytes("Player 2."));
+                server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                server.Bind(new IPEndPoint(address, port));
+                server.Listen(5);
+                server.BeginAccept(new AsyncCallback(OnConnectRequest), server);
+
+
                 
-                
+                Console.ReadLine(); 
             }
             catch (Exception e)
             {
@@ -85,25 +84,51 @@ namespace PongServer
             ball.Speed = 6;
         }
 
+        public void OnConnectRequest(IAsyncResult ar)
+        {
+
+            Socket listener = (Socket)ar.AsyncState;
+            Player tmpPlayer = new Player();
+            tmpPlayer.NetPlayer = server.EndAccept(ar);    
+            if (numOfPlayers >= 2)
+            {
+                byte[] reply = enc.GetBytes("Sorry, server is full!");
+                tmpPlayer.NetPlayer.Send(reply);
+                Console.WriteLine("A Player {0}, joined but the server is full!", tmpPlayer.NetPlayer.RemoteEndPoint);
+                tmpPlayer.NetPlayer.Close();
+            }
+            else
+            {
+                players.Add(tmpPlayer);
+                numOfPlayers++;
+                players[numOfPlayers - 1].PlayerNum = numOfPlayers;
+                Console.WriteLine("Player {0}: {1}, joined", players[numOfPlayers - 1].PlayerNum, players[numOfPlayers - 1].NetPlayer.RemoteEndPoint);
+            }
+            
+
+
+            listener.BeginAccept(new AsyncCallback(OnConnectRequest), listener);
+        }
+
         internal void StartGame()
         {
             //TODO: Make a better loop
-            while (true)
-            {
-                Update();
-                Thread.Sleep(10);
-            }
+            //while (true)
+           // {
+          //      Update();
+           //     Thread.Sleep(10);
+           // }
             
         }
 
         private void Update()
         {
             
-            String dataP1 = String.Format("{0} {1} {2} ", player1.Xpos, player1.Ypos, player1.Score);
-            String dataP2 = String.Format("{0} {1} {2} ", player2.Xpos, player2.Ypos, player2.Score);
-            String dataBall = String.Format("{0} {1} {2} {3}", ball.Xpos, ball.Ypos, ball.Angle, ball.Speed);
-            player1.NetPlayer.Send(enc.GetBytes(dataP2 + dataBall));
-            player2.NetPlayer.Send(enc.GetBytes(dataP1 + dataBall));
+            //String dataP1 = String.Format("{0} {1} {2} ", player1.Xpos, player1.Ypos, player1.Score);
+            //String dataP2 = String.Format("{0} {1} {2} ", player2.Xpos, player2.Ypos, player2.Score);
+           // String dataBall = String.Format("{0} {1} {2} {3}", ball.Xpos, ball.Ypos, ball.Angle, ball.Speed);
+           // player1.NetPlayer.Send(enc.GetBytes(dataP2 + dataBall));
+           // player2.NetPlayer.Send(enc.GetBytes(dataP1 + dataBall));
             //SocketAsyncEventArgs async1 = new SocketAsyncEventArgs();
             //SocketAsyncEventArgs async2 = new SocketAsyncEventArgs();
             //async1.AcceptSocket = player1.NetPlayer;
@@ -115,5 +140,8 @@ namespace PongServer
             
             
         }
+
+        
+        
     }
 }
