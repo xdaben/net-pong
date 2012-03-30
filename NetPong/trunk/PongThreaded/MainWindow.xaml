@@ -4,7 +4,8 @@
         Title="MainWindow" Height="460" Width="600"
         ResizeMode="NoResize"
         KeyDown="Window_KeyDown"
-        KeyUp="Window_KeyUp">
+        KeyUp="Window_KeyUp"
+        Closed="Window_Closed">
     
     <Grid VerticalAlignment="Top"
           HorizontalAlignment="Center" 
