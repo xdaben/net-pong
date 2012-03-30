@@ -16,6 +16,7 @@ namespace PongServer
             Server server = new Server();
             server.Init();
             server.StartGame();
+
             
         }
     }
