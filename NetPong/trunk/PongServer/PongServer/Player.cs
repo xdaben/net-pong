@@ -3,26 +3,50 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Net.Sockets;
+using System.Threading;
+using System.Text.RegularExpressions;
 
 namespace PongServer
 {
-    class Player
+    public class Player
     {
-        public int PlayerNum { get; set; }
-        public double Xpos { get; set; }
-        public double Ypos { get; set; }
-        public int Score { get; set; }
+        private double speed;
+
+        //Networking vars
         public Socket NetPlayer { get; set; }
         private const int buffLength = 256;
         private byte[] buffer = new byte[buffLength];
         public string recievedData = "";
-        //private string toSend = "";
         private Queue<string> toSendBuffer = new Queue<string>();
+        //Properties
+        //public GameLogic logic { get; set; }
+        public int PlayerNum { get; set; }
+        public double Xpos { get; set; }
+        public double Ypos { get; set; }
+        public double Height { get; set; }
+        public int Direction { get; set; }
+        public int Score { get; set; }
+        public double Speed
+        {
+            get
+            {
+                return speed;
+            }
+            set
+            {
+                if (Math.Abs(value) <= 7)
+                    speed = value;
+            }
+        }
+
         public string ToSend
         {
-            set { toSendBuffer.Enqueue(value); }
+            set
+            {
+                toSendBuffer.Enqueue(value);
+            }
         }
-       
+
         //public string toSendOld = "";
 
         public void SetupRecieveCallback()
@@ -52,7 +76,6 @@ namespace PongServer
                     buffer = ASCIIEncoding.ASCII.GetBytes(toSendBuffer.Dequeue());
                 }
                 AsyncCallback sendData = new AsyncCallback(OnSentData);
-                
                 NetPlayer.BeginSend(buffer, 0, buffer.Length, SocketFlags.None, sendData, NetPlayer);
             }
             catch (Exception ex)
@@ -72,7 +95,7 @@ namespace PongServer
                 {
                     // Write the data to the List
                     recievedData = Encoding.ASCII.GetString(buffer, 0, nBytesRec);
-
+                    ConvertRecievedData();
 
                     SetupRecieveCallback();
                 }
@@ -96,12 +119,30 @@ namespace PongServer
             int sent = NetPlayer.EndSend(ar);
             try
             {
+                //Thread.Sleep(100);
                 SetupSendCallback();
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Unusual error during sending!");
             }
+        }
+
+        private void ConvertRecievedData()
+        {
+            //What did I just write :/
+            //Gotta love regex autocompletion
+            Regex r = new Regex(@"[^0-9\.]+");
+            String[] tmp;
+            tmp = r.Split(recievedData);
+            double outDbl;
+            int outInt;
+            double.TryParse(tmp[0], out outDbl);
+            Ypos = outDbl;
+            //double.TryParse(tmp[1], out outDbl);
+           // Xpos = outDbl;
+           // Int32.TryParse(tmp[2], out outInt);
+           // Score = outInt;
         }
     }
 }

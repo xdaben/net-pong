@@ -5,11 +5,13 @@ using System.Text;
 
 namespace PongServer
 {
-    class Ball
+    public class Ball
     {
         public double Xpos { get; set; }
         public double Ypos { get; set; }
-        public int Angle { get; set; }
-        public int Speed { get; set; }
+        public double Angle { get; set; }
+        public double Speed { get; set; }
+
+        public int LastPaddle { get; set; }
     }
 }
