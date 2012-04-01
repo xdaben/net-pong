@@ -5,6 +5,7 @@ using System.Text;
 using System.Net;
 using System.Net.Sockets;
 using System.Text.RegularExpressions;
+using System.Threading;
 
 namespace PongThreaded
 {
@@ -18,6 +19,8 @@ namespace PongThreaded
         private IPAddress address;
         private Socket netPlayer;
         private byte[] buffer = new byte[buffLength];
+        private int player;
+        private bool playerSet;
         //Properties
         //This allows the program to get the raw recived string
         public string RecievedData
@@ -27,7 +30,15 @@ namespace PongThreaded
                 return recievedData;
             }
         }
-        
+
+        public int Player
+        {
+            get
+            {
+                return player;
+            }
+        }
+
         //No need to get the buffer
         public string ToSend
         {
@@ -45,8 +56,11 @@ namespace PongThreaded
             bool success;
             success = IPAddress.TryParse(ipAddress, out address);
             netPlayer = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            netPlayer.Bind(new IPEndPoint(address, 8001));
-            
+            netPlayer.BeginConnect(new IPEndPoint(address,8001), OnConnect, netPlayer);
+            SetupRecieveCallback();
+            SetupSendCallback();
+            ToSend = "C";
+
         }
 
         //Sets up the recieving thread
@@ -90,6 +104,27 @@ namespace PongThreaded
             }
         }
 
+        public void OnConnect(IAsyncResult ar)
+        {
+            // Socket was the passed in object
+            Socket sock = (Socket)ar.AsyncState;
+            
+            // Check if we were sucessfull
+            try
+            {
+                //    sock.EndConnect( ar );
+                if (sock.Connected)
+                    SetupRecieveCallback();
+                else
+                    Console.WriteLine("Error connecting to server");
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Unusual error during Connect!");
+            }
+        }
+
         //This gets called whenever new data is recieved through a socket
         private void OnRecievedData(IAsyncResult ar)
         {
@@ -102,6 +137,11 @@ namespace PongThreaded
                 {
                     // Write the data
                     recievedData = Encoding.ASCII.GetString(buffer, 0, nBytesRec);
+                    if (playerSet == false)
+                    {
+                        SetPlayer();
+                        playerSet = true;
+                    }
                     //ConvertRecievedData();
 
                     SetupRecieveCallback();
@@ -145,7 +185,7 @@ namespace PongThreaded
             String[] tmp;
             tmp = r.Split(recievedData);
             double outDbl;
-            int outInt;   
+            int outInt;
             double.TryParse(tmp[0], out outDbl);
             yPos = outDbl;
             double.TryParse(tmp[1], out outDbl);
@@ -155,6 +195,12 @@ namespace PongThreaded
             return true; //TODO: Get error checking in here
         }
 
-
+        private void SetPlayer()
+        {
+            Int32.TryParse(recievedData,out player);
+        
+                
+                
+        }
     }
 }
