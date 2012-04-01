@@ -152,19 +152,13 @@ namespace PongServer
             //List<string> playerDataToSend = new List<string>();
             while (endGame == false)
             {
+                //This section is written to assume that there is only 2 players! (which in this case works)
                 StringBuilder sb = new StringBuilder();
-                foreach (Player p in players)
-                {
-                    sb.Append(p.Xpos + " ");
-                    sb.Append(p.Ypos + " ");
-                    sb.Append(p.Score + " ");
-                }
+                sb.AppendFormat("{0} {1} {2}", players[1].Xpos, players[1].Ypos, players[1].Score);
+                players[0].ToSend = sb.ToString();
 
-                foreach (Player p in players)
-                {
-                    
-                    p.ToSend = sb.ToString();
-                }
+                sb.AppendFormat("{0} {1} {2}", players[0].Xpos, players[0].Ypos, players[0].Score);
+                players[1].ToSend = sb.ToString();
                 Thread.Sleep(100);
             }
             updateThread.Abort();
