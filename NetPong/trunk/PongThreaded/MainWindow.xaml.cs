@@ -40,7 +40,7 @@ namespace PongThreaded
             network = new Networking("192.168.0.176");
             Thread.Sleep(1000);
             player = network.Player;
-            Console.WriteLine("Player {0}",player);
+            Console.WriteLine("Player {0}", player);
         }
 
         private void InitSprites()
@@ -88,7 +88,7 @@ namespace PongThreaded
             //logicTimer.Start();
 
             logicThread = new Thread(new ThreadStart(LogicUpdate));
-            logicThread.Start();           
+            logicThread.Start();
 
             //Thread displayThread = new Thread(new ThreadStart(UpdateDisplay));
             //displayThread.Start();
@@ -97,18 +97,51 @@ namespace PongThreaded
             displayTimer.Interval = new TimeSpan(0, 0, 0, 0, 15);
             displayTimer.Tick += DisplayTimerHandler;
             displayTimer.Start();
-
         }
 
         private void LogicUpdate()
         {
             while (true)
             {
+                NetworkUpdate();
                 game.MovePaddle(game.paddle1);
                 game.MovePaddle(game.paddle2);
                 game.MoveBall(game.ball);
                 Thread.Sleep(15);
-            }            
+            }
+        }
+
+        private void NetworkUpdate()
+        {
+            StringBuilder sb = new StringBuilder();
+            if (player == 1)
+            {
+                sb.AppendFormat("{0} {1} {2}", game.paddle1.XPos, game.paddle1.YPos, game.playerOneScore);
+            }
+            if (player == 2)
+            {
+                sb.AppendFormat("{0} {1} {2}", game.paddle2.XPos, game.paddle2.YPos, game.playerTwoScore);
+            }
+            network.ToSend = sb.ToString();
+            if (player == 1)
+            {
+                double xPos, yPos;
+                int score;
+                network.GetData(out xPos, out yPos, out score);
+                Console.WriteLine(xPos);
+                game.paddle2.XPos = xPos;
+                game.paddle2.YPos = yPos;
+                game.playerTwoScore = score;
+            }
+            if (player == 2)
+            {
+                double xPos, yPos;
+                int score;
+                network.GetData(out xPos, out yPos, out score);
+                game.paddle1.XPos = xPos;
+                game.paddle1.YPos = yPos;
+                game.playerOneScore = score;
+            }
         }
 
         private void LogicTimerHandler(object sender, EventArgs e)
@@ -164,16 +197,19 @@ namespace PongThreaded
             {
                 if (e.Key == Key.Up)
                     game.paddle2.Direction = -1;
-                else if (e.Key == Key.Down)
-                    game.paddle2.Direction = 1;
+                else
+                    if (e.Key == Key.Down)
+                        game.paddle2.Direction = 1;
             }
-            else if (player == 2)
-            {
-                if (e.Key == Key.Up)
-                    game.paddle1.Direction = -1;
-                else if (e.Key == Key.Down)
-                    game.paddle1.Direction = 1;
-            }
+            else
+                if (player == 2)
+                {
+                    if (e.Key == Key.Up)
+                        game.paddle1.Direction = -1;
+                    else
+                        if (e.Key == Key.Down)
+                            game.paddle1.Direction = 1;
+                }
         }
 
         private void Window_KeyUp(object sender, KeyEventArgs e)
@@ -188,11 +224,12 @@ namespace PongThreaded
                 if (e.Key == Key.Up || e.Key == Key.Down)
                     game.paddle2.Direction = 0;
             }
-            else if (player == 2)
-            {
-                if (e.Key == Key.Up || e.Key == Key.Down)
-                    game.paddle1.Direction = 0;
-            }
+            else
+                if (player == 2)
+                {
+                    if (e.Key == Key.Up || e.Key == Key.Down)
+                        game.paddle1.Direction = 0;
+                }
         }
 
         private void Window_Closed(object sender, EventArgs e)

@@ -178,7 +178,7 @@ namespace PongThreaded
         }
 
         //Call this to get the recieved data already processed, as out X, Y, Score
-        public bool GetData(out double xPos, out double yPos, out double score)
+        public bool GetData(out double xPos, out double yPos, out int score)
         {
             //I am terrible at regex, there is probabally a better expression than this
             Regex r = new Regex(@"[^0-9\.]+");
