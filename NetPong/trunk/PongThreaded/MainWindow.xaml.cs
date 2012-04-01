@@ -22,13 +22,25 @@ namespace PongThreaded
         GameLogic game;
         DispatcherTimer /*logicTimer,*/ displayTimer;
         Thread logicThread, displayThread;
+        private int player;
+        Networking network;
 
         public MainWindow()
         {
             InitializeComponent();
             InitSprites();
+            InitNetwork();
+            //Temporary, use some sort of input to get the address            
             game = new GameLogic();
             Update();
+        }
+
+        private void InitNetwork()
+        {
+            network = new Networking("192.168.0.176");
+            Thread.Sleep(1000);
+            player = network.Player;
+            Console.WriteLine("Player {0}",player);
         }
 
         private void InitSprites()
@@ -101,8 +113,14 @@ namespace PongThreaded
 
         private void LogicTimerHandler(object sender, EventArgs e)
         {
-            game.MovePaddle(game.paddle1);
-            game.MovePaddle(game.paddle2);
+            if (player == 1)
+            {
+                game.MovePaddle(game.paddle1);
+            }
+            if (player == 2)
+            {
+                game.MovePaddle(game.paddle2);
+            }
             game.MoveBall(game.ball);
         }
 
@@ -133,22 +151,48 @@ namespace PongThreaded
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Up)
-                game.paddle2.Direction = -1;
-            else if (e.Key == Key.Down)
-                game.paddle2.Direction = 1;
-            else if (e.Key == Key.A)
-                game.paddle1.Direction = -1;
-            else if (e.Key == Key.Z)
-                game.paddle1.Direction = 1;
+            //if (e.Key == Key.Up)
+            //    game.paddle2.Direction = -1;
+            //else if (e.Key == Key.Down)
+            //    game.paddle2.Direction = 1;
+            //else if (e.Key == Key.A)
+            //    game.paddle1.Direction = -1;
+            //else if (e.Key == Key.Z)
+            //    game.paddle1.Direction = 1;
+
+            if (player == 1)
+            {
+                if (e.Key == Key.Up)
+                    game.paddle2.Direction = -1;
+                else if (e.Key == Key.Down)
+                    game.paddle2.Direction = 1;
+            }
+            else if (player == 2)
+            {
+                if (e.Key == Key.Up)
+                    game.paddle1.Direction = -1;
+                else if (e.Key == Key.Down)
+                    game.paddle1.Direction = 1;
+            }
         }
 
         private void Window_KeyUp(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Up || e.Key == Key.Down)
-                game.paddle2.Direction = 0;
-            else if (e.Key == Key.A || e.Key == Key.Z)
-                game.paddle1.Direction = 0;
+            //if (e.Key == Key.Up || e.Key == Key.Down)
+            //    game.paddle2.Direction = 0;
+            //else if (e.Key == Key.A || e.Key == Key.Z)
+            //    game.paddle1.Direction = 0;
+
+            if (player == 1)
+            {
+                if (e.Key == Key.Up || e.Key == Key.Down)
+                    game.paddle2.Direction = 0;
+            }
+            else if (player == 2)
+            {
+                if (e.Key == Key.Up || e.Key == Key.Down)
+                    game.paddle1.Direction = 0;
+            }
         }
 
         private void Window_Closed(object sender, EventArgs e)
