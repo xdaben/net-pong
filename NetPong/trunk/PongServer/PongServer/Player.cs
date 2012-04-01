@@ -95,7 +95,10 @@ namespace PongServer
                 {
                     // Write the data to the List
                     recievedData = Encoding.ASCII.GetString(buffer, 0, nBytesRec);
-                    ConvertRecievedData();
+                    if (recievedData != "")
+                    {
+                        ConvertRecievedData();
+                    }
 
                     SetupRecieveCallback();
                 }
