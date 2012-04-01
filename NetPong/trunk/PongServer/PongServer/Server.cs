@@ -143,6 +143,10 @@ namespace PongServer
                 //wait until the game is ready
             }
             
+            players[0].Xpos = 15;
+            players[0].Ypos = 150;
+            players[1].Xpos = 560;
+            players[1].Ypos = 150;
             updateThread = new Thread(new ThreadStart(Update));
             updateThread.Start();
 
