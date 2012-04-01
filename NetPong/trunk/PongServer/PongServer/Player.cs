@@ -142,10 +142,10 @@ namespace PongServer
             int outInt;
             double.TryParse(tmp[0], out outDbl);
             Ypos = outDbl;
-            //double.TryParse(tmp[1], out outDbl);
-           // Xpos = outDbl;
-           // Int32.TryParse(tmp[2], out outInt);
-           // Score = outInt;
+            double.TryParse(tmp[1], out outDbl);
+            Xpos = outDbl;
+            Int32.TryParse(tmp[2], out outInt);
+            Score = outInt;
         }
     }
 }

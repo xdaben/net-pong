@@ -143,10 +143,12 @@ namespace PongServer
                 //wait until the game is ready
             }
             
-            players[0].Xpos = 15;
-            players[0].Ypos = 150;
-            players[1].Xpos = 560;
+            players[1].Xpos = 15;
             players[1].Ypos = 150;
+            players[1].Score = 0;
+            players[0].Xpos = 560;
+            players[0].Ypos = 150;
+            players[0].Score = 0;
             updateThread = new Thread(new ThreadStart(Update));
             updateThread.Start();
 
@@ -157,21 +159,31 @@ namespace PongServer
 
             //Timer logicTimer = new Timer(new TimerCallback(Update), null, 0, 10);
             //Regex r = new Regex(@"\d+");
-
-
+            StringBuilder sb = new StringBuilder();
+            
+            foreach (Player p in players)
+            {
+                sb.AppendFormat("{0} {1} {2} ", p.Xpos, p.Ypos, p.Score);
+            }
+            sb.AppendFormat("{0} {1}", ball.Xpos, ball.Ypos);
+            foreach (Player p in players)
+            {
+                p.ToSend = sb.ToString();
+            }
 
             //List<string> playerDataToSend = new List<string>();
-            while (endGame == false)
-            {
-                //This section is written to assume that there is only 2 players! (which in this case works)
-                StringBuilder sb = new StringBuilder();
-                sb.AppendFormat("{0} {1} {2}", players[1].Xpos, players[1].Ypos, players[1].Score);
-                players[0].ToSend = sb.ToString();
-
-                sb.AppendFormat("{0} {1} {2}", players[0].Xpos, players[0].Ypos, players[0].Score);
-                players[1].ToSend = sb.ToString();
-                Thread.Sleep(100);
-            }
+            //while (endGame == false)
+            //{
+            //    //This section is written to assume that there is only 2 players! (which in this case works)
+            //    StringBuilder sb = new StringBuilder();
+            //    sb.AppendFormat("{0} {1} {2}",players[1].Xpos, players[1].Ypos, players[1].Score);
+            //    players[0].ToSend = sb.ToString();
+            //    sb.Clear();
+            //    sb.AppendFormat("{0} {1} {2}",players[0].Xpos, players[0].Ypos, players[0].Score);
+            //    players[1].ToSend = sb.ToString();
+            //    sb.Clear();
+            //    Thread.Sleep(100);
+            //}
             updateThread.Abort();
             server.Close();
 
