@@ -95,10 +95,17 @@ namespace PongServer
                 players.Add(tmpPlayer);
                 int thisPlayer = ++numOfPlayers;
                 tmpPlayer.PlayerNum = thisPlayer;
-                tmpPlayer.ToSend = String.Format("{0}", thisPlayer);
+            
+
                 Console.WriteLine("Player {0}: {1}, joined", tmpPlayer.PlayerNum, players[thisPlayer - 1].NetPlayer.RemoteEndPoint);
                 tmpPlayer.SetupRecieveCallback();
                 tmpPlayer.SetupSendCallback();
+                while (tmpPlayer.recievedData != "C")
+                {
+                    tmpPlayer.ToSend = String.Format("{0}", thisPlayer);
+                    Thread.Sleep(100);
+                }
+                
                 //tmpPlayer.logic = new GameLogic(tmpPlayer);
                 IsReady();
 
