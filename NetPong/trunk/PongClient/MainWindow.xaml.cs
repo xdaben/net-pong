@@ -25,6 +25,7 @@ namespace PongClient
         GameObjects game = new GameObjects();
         Thread networkThread;
         DispatcherTimer displayTimer;
+        Networking net;
         int direction;
         int playerNumber;
 
@@ -32,6 +33,7 @@ namespace PongClient
         {
             InitializeComponent();
             InitSprites();
+            ConnectToServer();
             Update();
         }
 
@@ -43,6 +45,7 @@ namespace PongClient
              *  receive the assigned player number,
              *  and initialize the game object coordinates.
              */
+            net = new Networking("192.168.0.176", game);
         }
         #endregion
 
@@ -116,8 +119,9 @@ namespace PongClient
                  *  and receive the new coordinates and updated
                  *  scores.
                  */
+                net.ToSend = direction.ToString();
                 
-                Thread.Sleep(1); // we can tweak this value if the buffer overflows
+                Thread.Sleep(10); // we can tweak this value if the buffer overflows
             }
         }
 
@@ -163,6 +167,7 @@ namespace PongClient
         private void Window_Closed(object sender, EventArgs e)
         {
             networkThread.Abort();
+            
         }
         #endregion
     }
