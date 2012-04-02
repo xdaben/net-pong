@@ -160,24 +160,14 @@ namespace PongServer
 
             
             StringBuilder sb = new StringBuilder();
+            const int round = 3;
             while (endGame == false)
             {
-                for (int i = 0; i < players.Count; i++)
-                {
-                    for (int k = 0; k < players.Count; k++)
-                    {
-                        if (k != i)
-                        {
-                            sb.AppendFormat("{0} {1} {2} {3} {4}");
-                        }
-                    }
-                }
-                
                 foreach (Player p in players)
                 {
-                    sb.AppendFormat("{0} {1} {2} ", p.XPos, p.YPos, p.Score);
+                    sb.AppendFormat("{0} {1} {2} ", Math.Round(p.XPos,round), Math.Round(p.YPos,round), p.Score);
                 }
-                sb.AppendFormat("{0} {1}", logic.ball.XPos, logic.ball.YPos);
+                sb.AppendFormat("{0} {1}", Math.Round(logic.ball.XPos,round), Math.Round(logic.ball.YPos,round));
                 foreach (Player p in players)
                 {
                     p.ToSend = sb.ToString();
