@@ -24,7 +24,27 @@ namespace PongServer
         //Properties
         public int PlayerNum { get; set; }
         public double XPos { get; set; }
-        public double YPos { get; set; }
+        private double yPos;
+        public double YPos
+        {
+            get { return yPos; }
+
+            set
+            {
+                if (value <= 0)
+                {
+                    yPos = 0;
+                    this.Speed = 0;
+                }
+                else if (value >= 300)
+                {
+                    yPos = 300;
+                    this.Speed = 0;
+                }
+                else
+                    yPos = value;
+            }
+        }
         public int Direction { get; set; }
         public int Score { get; set; }
         public int Height

@@ -103,7 +103,7 @@ namespace PongServer
             {
                 foreach (Player p in players)
                 {
-                    p.ToSend = String.Format("Waiting for {0} more player(s)\n", maxNumOfPlayers - numOfPlayers);
+                    //p.ToSend = String.Format("Waiting for {0} more player(s)\n", maxNumOfPlayers - numOfPlayers);
                 }
             }
             else
@@ -132,14 +132,14 @@ namespace PongServer
         private void Update()
         {
             StringBuilder sb = new StringBuilder();
-            const int round = 3;
+            const int round = 10;
             while (endGame == false)
             {
                 foreach (Player p in players)
                 {
-                    sb.AppendFormat("{0} {1} {2} ", Math.Round(p.XPos, round), Math.Round(p.YPos, round), p.Score);
+                    sb.AppendFormat("{0} {1} {2} ", p.XPos, p.YPos, p.Score);
                 }
-                sb.AppendFormat("{0} {1}", Math.Round(logic.ball.XPos, round), Math.Round(logic.ball.YPos, round));
+                sb.AppendFormat("{0} {1}", logic.ball.XPos, logic.ball.YPos);
                 foreach (Player p in players)
                 {
                     p.ToSend = sb.ToString();
