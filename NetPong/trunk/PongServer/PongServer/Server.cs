@@ -172,7 +172,7 @@ namespace PongServer
                     p.ToSend = sb.ToString();
                 }
                 sb.Clear();
-                Thread.Sleep(200);
+                Thread.Sleep(100);
                 logic.MoveBall(logic.ball);
             }
 

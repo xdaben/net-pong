@@ -13,11 +13,7 @@ namespace PongServer
         private double speed;
         private int height = 80;
 
-        public int Height
-        {
-            get { return height; }
-            set { height = value; }
-        }
+
 
         //Networking vars
         public Socket NetPlayer { get; set; }
@@ -26,13 +22,16 @@ namespace PongServer
         public string recievedData = "";
         private Queue<string> toSendBuffer = new Queue<string>();
         //Properties
-        //public GameLogic logic { get; set; }
         public int PlayerNum { get; set; }
         public double XPos { get; set; }
         public double YPos { get; set; }
-        
         public int Direction { get; set; }
         public int Score { get; set; }
+        public int Height
+        {
+            get { return height; }
+            set { height = value; }
+        }
         public double Speed
         {
             get
@@ -54,7 +53,7 @@ namespace PongServer
             }
         }
 
-        //public string toSendOld = "";
+      
 
         public void SetupRecieveCallback()
         {
@@ -129,7 +128,7 @@ namespace PongServer
             int sent = NetPlayer.EndSend(ar);
             try
             {
-                //Thread.Sleep(100);
+                
                 SetupSendCallback();
             }
             catch (Exception ex)
