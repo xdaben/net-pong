@@ -34,7 +34,7 @@ namespace PongServer
         Thread updateThread;
         bool isReady;
         GameLogic logic;
-        //Timer timer;
+       
 
 
 
@@ -48,8 +48,7 @@ namespace PongServer
                       select addr
             ).FirstOrDefault();
 
-            //for now use localhost
-            //address = IPAddress.Parse("127.0.0.1");
+            
             address = ip;
         }
 
@@ -67,7 +66,7 @@ namespace PongServer
 
 
                 
-                //Console.ReadLine(); 
+                 
             }
             catch (Exception e)
             {
@@ -75,7 +74,7 @@ namespace PongServer
                 Console.WriteLine("Error starting server: {0}", e.Message);
             }
 
-            //set up game vars
+            
 
         }
 
@@ -107,7 +106,7 @@ namespace PongServer
                     Thread.Sleep(100);
                 }
                 
-                //tmpPlayer.logic = new GameLogic(tmpPlayer);
+                
                 IsReady();
 
             }
@@ -159,8 +158,7 @@ namespace PongServer
         private void Update()
         {
 
-            //Timer logicTimer = new Timer(new TimerCallback(Update), null, 0, 10);
-            //Regex r = new Regex(@"\d+");
+            
             StringBuilder sb = new StringBuilder();
             while (endGame == false)
             {
@@ -168,30 +166,17 @@ namespace PongServer
                 {
                     sb.AppendFormat("{0} {1} {2} ", p.XPos, p.YPos, p.Score);
                 }
-                sb.AppendFormat("{0} {1}", ball.XPos, ball.YPos);
+                sb.AppendFormat("{0} {1}", logic.ball.XPos, logic.ball.YPos);
                 foreach (Player p in players)
                 {
                     p.ToSend = sb.ToString();
                 }
                 sb.Clear();
                 Thread.Sleep(200);
-                Console.WriteLine("{0} {1}", logic.ball.XPos, logic.ball.YPos);
                 logic.MoveBall(logic.ball);
             }
 
-            //List<string> playerDataToSend = new List<string>();
-            //while (endGame == false)
-            //{
-            //    //This section is written to assume that there is only 2 players! (which in this case works)
-            //    StringBuilder sb = new StringBuilder();
-            //    sb.AppendFormat("{0} {1} {2}",players[1].Xpos, players[1].Ypos, players[1].Score);
-            //    players[0].ToSend = sb.ToString();
-            //    sb.Clear();
-            //    sb.AppendFormat("{0} {1} {2}",players[0].Xpos, players[0].Ypos, players[0].Score);
-            //    players[1].ToSend = sb.ToString();
-            //    sb.Clear();
-            //    Thread.Sleep(100);
-            //}
+            
             updateThread.Abort();
             server.Close();
 
