@@ -162,6 +162,17 @@ namespace PongServer
             StringBuilder sb = new StringBuilder();
             while (endGame == false)
             {
+                for (int i = 0; i < players.Count; i++)
+                {
+                    for (int k = 0; k < players.Count; k++)
+                    {
+                        if (k != i)
+                        {
+                            sb.AppendFormat("{0} {1} {2} {3} {4}");
+                        }
+                    }
+                }
+                
                 foreach (Player p in players)
                 {
                     sb.AppendFormat("{0} {1} {2} ", p.XPos, p.YPos, p.Score);
@@ -173,6 +184,8 @@ namespace PongServer
                 }
                 sb.Clear();
                 Thread.Sleep(100);
+                logic.MovePaddle(players[0]);
+                logic.MovePaddle(players[1]);
                 logic.MoveBall(logic.ball);
             }
 
