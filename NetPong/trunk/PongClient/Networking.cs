@@ -152,6 +152,7 @@ namespace PongClient
                         SetPlayer();
                         playerSet = true;
                     }
+                    Console.WriteLine(recievedData);
                     GetRecievedData();
                     SetupRecieveCallback();
                 }
@@ -217,7 +218,6 @@ namespace PongClient
             gObjects.Player2Score = score2;
             gObjects.BallXPos = ballXPos;
             gObjects.BallYPos = ballYPos;
-            
 
         }
 

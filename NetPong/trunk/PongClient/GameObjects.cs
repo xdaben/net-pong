@@ -47,7 +47,7 @@ namespace PongClient
 
         public double Paddle2YPos
         {
-            get { return paddle1YPos; }
+            get { return paddle2YPos; }
             set { paddle2YPos = value; }
         }
 
