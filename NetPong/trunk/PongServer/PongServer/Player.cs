@@ -11,6 +11,13 @@ namespace PongServer
     public class Player
     {
         private double speed;
+        private int height = 80;
+
+        public int Height
+        {
+            get { return height; }
+            set { height = value; }
+        }
 
         //Networking vars
         public Socket NetPlayer { get; set; }
@@ -21,9 +28,9 @@ namespace PongServer
         //Properties
         //public GameLogic logic { get; set; }
         public int PlayerNum { get; set; }
-        public double Xpos { get; set; }
-        public double Ypos { get; set; }
-        public double Height { get; set; }
+        public double XPos { get; set; }
+        public double YPos { get; set; }
+        
         public int Direction { get; set; }
         public int Score { get; set; }
         public double Speed
@@ -141,9 +148,9 @@ namespace PongServer
             double outDbl;
             int outInt;
             double.TryParse(tmp[0], out outDbl);
-            Ypos = outDbl;
+            YPos = outDbl;
             double.TryParse(tmp[1], out outDbl);
-            Xpos = outDbl;
+            XPos = outDbl;
             Int32.TryParse(tmp[2], out outInt);
             Score = outInt;
         }
