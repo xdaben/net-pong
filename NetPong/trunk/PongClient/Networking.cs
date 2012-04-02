@@ -152,7 +152,7 @@ namespace PongClient
                         SetPlayer();
                         playerSet = true;
                     }
-                    Console.WriteLine(recievedData);
+                    
                     GetRecievedData();
                     SetupRecieveCallback();
                 }
