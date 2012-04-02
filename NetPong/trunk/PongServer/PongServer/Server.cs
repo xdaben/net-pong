@@ -33,6 +33,7 @@ namespace PongServer
         bool endGame;
         Thread updateThread;
         bool isReady;
+        GameLogic logic;
         //Timer timer;
 
 
@@ -129,6 +130,7 @@ namespace PongServer
             else
             {
                 isReady = true;
+                logic = new GameLogic(players);
                 
             }
         }
@@ -143,11 +145,11 @@ namespace PongServer
                 //wait until the game is ready
             }
             
-            players[1].Xpos = 15;
-            players[1].Ypos = 150;
+            players[1].XPos = 15;
+            players[1].YPos = 150;
             players[1].Score = 0;
-            players[0].Xpos = 560;
-            players[0].Ypos = 150;
+            players[0].XPos = 560;
+            players[0].YPos = 150;
             players[0].Score = 0;
             updateThread = new Thread(new ThreadStart(Update));
             updateThread.Start();
@@ -160,15 +162,21 @@ namespace PongServer
             //Timer logicTimer = new Timer(new TimerCallback(Update), null, 0, 10);
             //Regex r = new Regex(@"\d+");
             StringBuilder sb = new StringBuilder();
-            
-            foreach (Player p in players)
+            while (endGame == false)
             {
-                sb.AppendFormat("{0} {1} {2} ", p.Xpos, p.Ypos, p.Score);
-            }
-            sb.AppendFormat("{0} {1}", ball.Xpos, ball.Ypos);
-            foreach (Player p in players)
-            {
-                p.ToSend = sb.ToString();
+                foreach (Player p in players)
+                {
+                    sb.AppendFormat("{0} {1} {2} ", p.XPos, p.YPos, p.Score);
+                }
+                sb.AppendFormat("{0} {1}", ball.XPos, ball.YPos);
+                foreach (Player p in players)
+                {
+                    p.ToSend = sb.ToString();
+                }
+                sb.Clear();
+                Thread.Sleep(200);
+                Console.WriteLine("{0} {1}", logic.ball.XPos, logic.ball.YPos);
+                logic.MoveBall(logic.ball);
             }
 
             //List<string> playerDataToSend = new List<string>();
