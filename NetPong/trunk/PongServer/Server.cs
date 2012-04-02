@@ -9,7 +9,6 @@ using System.Text.RegularExpressions;
 
 namespace PongServer
 {
-
     class Server
     {
         //Network stuff
@@ -34,7 +33,6 @@ namespace PongServer
         Thread updateThread;
         bool isReady;
         GameLogic logic;
-       
 
 
 
@@ -48,42 +46,31 @@ namespace PongServer
                       select addr
             ).FirstOrDefault();
 
-            
             address = ip;
         }
 
         internal void Init()
         {
-            
             Console.WriteLine("Welcome to the pong server!");
-            Console.WriteLine("Your IP address is {0}.",address);
+            Console.WriteLine("Your IP address is {0}.", address);
             try
             {
                 server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 server.Bind(new IPEndPoint(address, port));
                 server.Listen(5);
                 server.BeginAccept(new AsyncCallback(OnConnectRequest), server);
-
-
-                
-                 
             }
             catch (Exception e)
             {
-
                 Console.WriteLine("Error starting server: {0}", e.Message);
             }
-
-            
-
         }
 
         public void OnConnectRequest(IAsyncResult ar)
         {
-
             Socket listener = (Socket)ar.AsyncState;
             Player tmpPlayer = new Player();
-            tmpPlayer.NetPlayer = server.EndAccept(ar);    
+            tmpPlayer.NetPlayer = server.EndAccept(ar);
             if (numOfPlayers >= maxNumOfPlayers)
             {
                 tmpPlayer.ToSend = "Sorry, server is full!";
@@ -95,22 +82,15 @@ namespace PongServer
                 players.Add(tmpPlayer);
                 int thisPlayer = ++numOfPlayers;
                 tmpPlayer.PlayerNum = thisPlayer;
-            
 
                 Console.WriteLine("Player {0}: {1}, joined", tmpPlayer.PlayerNum, players[thisPlayer - 1].NetPlayer.RemoteEndPoint);
                 tmpPlayer.SetupRecieveCallback();
                 tmpPlayer.SetupSendCallback();
-                while (tmpPlayer.recievedData != "C")
-                {
-                    tmpPlayer.ToSend = String.Format("{0}", thisPlayer);
-                    Thread.Sleep(100);
-                }
-                
-                
-                IsReady();
 
+                tmpPlayer.ToSend = String.Format("{0}", thisPlayer);
+                Thread.Sleep(100);
+                IsReady();
             }
-            
 
 
             listener.BeginAccept(new AsyncCallback(OnConnectRequest), listener);
@@ -130,12 +110,8 @@ namespace PongServer
             {
                 isReady = true;
                 logic = new GameLogic(players);
-                
             }
         }
-        
-
-        
 
         internal void StartGame()
         {
@@ -143,7 +119,6 @@ namespace PongServer
             {
                 //wait until the game is ready
             }
-            
             players[1].XPos = 15;
             players[1].YPos = 150;
             players[1].Score = 0;
@@ -152,42 +127,34 @@ namespace PongServer
             players[0].Score = 0;
             updateThread = new Thread(new ThreadStart(Update));
             updateThread.Start();
-
         }
 
         private void Update()
         {
-
-            
             StringBuilder sb = new StringBuilder();
             const int round = 3;
             while (endGame == false)
             {
                 foreach (Player p in players)
                 {
-                    sb.AppendFormat("{0} {1} {2} ", Math.Round(p.XPos,round), Math.Round(p.YPos,round), p.Score);
+                    sb.AppendFormat("{0} {1} {2} ", Math.Round(p.XPos, round), Math.Round(p.YPos, round), p.Score);
                 }
-                sb.AppendFormat("{0} {1}", Math.Round(logic.ball.XPos,round), Math.Round(logic.ball.YPos,round));
+                sb.AppendFormat("{0} {1}", Math.Round(logic.ball.XPos, round), Math.Round(logic.ball.YPos, round));
                 foreach (Player p in players)
                 {
                     p.ToSend = sb.ToString();
                 }
+                
                 sb.Clear();
-                Thread.Sleep(100);
+                Thread.Sleep(10);
                 logic.MovePaddle(players[0]);
                 logic.MovePaddle(players[1]);
                 logic.MoveBall(logic.ball);
+                
             }
 
-            
             updateThread.Abort();
             server.Close();
-
-            
-            
         }
-
-        
-        
     }
 }
