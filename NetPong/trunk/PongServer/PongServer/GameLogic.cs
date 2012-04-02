@@ -121,21 +121,21 @@ namespace PongServer
             }
         }
 
-        //THIS SHOULD BE CLIENTSIDE
-        //public void MovePaddle(Paddle paddle)
-        //{
-        //    if (paddle.Direction != 0)
-        //        paddle.Speed += paddle.Direction * 0.5;
-        //    else
-        //    {
-        //        if (Math.Abs(paddle.Speed) > 0.3)
-        //            paddle.Speed *= 0.9;
-        //        else
-        //            paddle.Speed = 0;
-        //    }
+       
+        public void MovePaddle(Player paddle)
+        {
+            if (paddle.Direction != 0)
+                paddle.Speed += paddle.Direction * 0.5;
+            else
+            {
+                if (Math.Abs(paddle.Speed) > 0.3)
+                    paddle.Speed *= 0.9;
+                else
+                    paddle.Speed = 0;
+            }
 
-        //    paddle.YPos += paddle.Speed;
-        //}
+            paddle.YPos += paddle.Speed;
+        }
 
     }
 }

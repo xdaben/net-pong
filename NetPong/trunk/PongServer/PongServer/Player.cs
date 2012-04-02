@@ -139,19 +139,12 @@ namespace PongServer
 
         private void ConvertRecievedData()
         {
-            //What did I just write :/
-            //Gotta love regex autocompletion
-            Regex r = new Regex(@"[^0-9\.]+");
-            String[] tmp;
-            tmp = r.Split(recievedData);
-            double outDbl;
-            int outInt;
-            double.TryParse(tmp[0], out outDbl);
-            YPos = outDbl;
-            double.TryParse(tmp[1], out outDbl);
-            XPos = outDbl;
-            Int32.TryParse(tmp[2], out outInt);
-            Score = outInt;
+            
+            string rec = recievedData.Trim();
+            int dir;
+            int.TryParse(rec, out dir);
+            Direction = dir;
+
         }
     }
 }
